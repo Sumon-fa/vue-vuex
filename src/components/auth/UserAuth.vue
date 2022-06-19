@@ -13,7 +13,12 @@
       <form @submit.prevent="submitForm">
         <div>
           <label for="email">Email</label>
-          <input type="email" id="email" v-model.trim="email" />
+          <input
+            :class="{ gg: email }"
+            type="email"
+            id="email"
+            v-model.trim="email"
+          />
         </div>
         <p v-if="!formIsValid">Please valid email and password!</p>
         <div>
@@ -74,6 +79,7 @@ export default {
             email: this.email,
             password: this.password,
           });
+          this.$router.replace('/teams');
         } else {
           await this.$store.dispatch('auth/signup', {
             email: this.email,
@@ -99,3 +105,8 @@ export default {
   },
 };
 </script>
+<style>
+.gg {
+  border: 1px solid red;
+}
+</style>

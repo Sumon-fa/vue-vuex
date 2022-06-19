@@ -3,11 +3,12 @@ import TeamsList from './components/teams/TeamsList.vue';
 import UsersList from './components/users/UsersList.vue';
 import TeamMembers from './components/teams/TeamMembers.vue';
 import UserAuth from './components/auth/UserAuth.vue';
+import store from './store/index';
 const router = createRouter({
   history: createWebHistory(),
   routes: [
     //{ path: '/', redirect: '/teams' },
-    { path: '/', component: UserAuth },
+    { path: '/', component: UserAuth, meta: { requiresUnauth: true } },
     {
       path: '/teams',
       component: TeamsList,
@@ -15,8 +16,9 @@ const router = createRouter({
       children: [
         { path: '/teams/:teamId', component: TeamMembers, props: true },
       ],
+      meta: { requiresAuth: true },
     },
-    { path: '/users', component: UsersList },
+    { path: '/users', component: UsersList, meta: { requiresAuth: true } },
 
     { path: '/:notFound(.*)', component: TeamsList },
   ],
@@ -25,20 +27,19 @@ const router = createRouter({
     return { left: 0, top: 0 };
   },
 });
-router.beforeEach(function (to, from, next) {
-  console.log('Global beforeEach');
-  console.log(to, from);
-  if (to.meta.needsAuth) {
-    console.log('Needs auth!');
-    next();
+router.beforeEach(function (to, _, next) {
+  console.log(store.getters['auth/isAuthenticated']);
+  if (to.meta.requiresAuth && !store.getters['auth/isAuthenticated']) {
+    console.log(store.getters['auth/isAuthenticated']);
+    next('/');
+  }
+  if (to.meta.requiresUnauth && store.getters['auth/isAuthenticated']) {
+    console.log(store.getters['auth/isAuthenticated']);
+    next('/users');
   } else {
+    console.log(store.getters['auth/isAuthenticated']);
     next();
   }
-  // if (to.name === 'team-members') {
-  //   next();
-  // } else {
-  //   next({ name: 'team-members', params: { teamId: 't2' } });
-  // }
-  // next();
 });
+
 export default router;

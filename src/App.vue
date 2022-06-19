@@ -34,6 +34,9 @@ export default {
       users: this.users,
     };
   },
+  created() {
+    this.$store.dispatch('auth/tryLogin');
+  },
 };
 </script>
 

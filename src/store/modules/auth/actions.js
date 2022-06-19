@@ -19,6 +19,9 @@ export default {
         responseData.error.errors[0].message || 'User is not authenticated'
       );
     }
+    localStorage.setItem('token', responseData.idToken);
+    localStorage.setItem('userId', responseData.localId);
+
     context.commit('setUser', {
       userId: responseData.localId,
       token: responseData.idToken,
@@ -49,6 +52,24 @@ export default {
       userId: responseData.localId,
       token: responseData.idToken,
       tokenExpiration: responseData.expiresIn,
+    });
+  },
+  tryLogin(context) {
+    const token = localStorage.getItem('token');
+    const userId = localStorage.getItem('userId');
+
+    if (token && userId) {
+      context.commit('setUser', {
+        token: token,
+        userId: userId,
+      });
+    }
+  },
+  logout(context) {
+    context.commit('setUser', {
+      token: null,
+      userId: null,
+      tokenExpiration: null,
     });
   },
 };
